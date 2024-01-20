@@ -1,0 +1,25 @@
+<Project>
+  <PropertyGroup Label="C#">
+    <LangVersion>11.0</LangVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>yambar.Raylib</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup Label="Icon">
+    <None Include="$(MSBuildThisFileDirectory).github\assets\nupkg-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>icon.png</PackagePath>
+    </None>
+  </ItemGroup>
+  <PropertyGroup Label="NuGet">
+    <Authors>Israel Calebe</Authors>
+    <Copyright>Copyright (c) 2023 Israel Calebe</Copyright>
+    <Product>yambar::raylib</Product>
+    <PackageReleaseNotes>Automated release.</PackageReleaseNotes>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/yambar/raylib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/yambar/raylib</RepositoryUrl>
+  </PropertyGroup>
+</Project>
