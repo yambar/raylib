@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Project">
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <AssemblyTitle>yambar::raylib Libraries</AssemblyTitle>
+    <AssemblyName>yambar.Raylib.NativeLibs</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Label="NuGet">
+    <Title>yambar::raylib Libraries</Title>
+    <Description>The native libraries that power yambar::raylib.</Description>
+    <PackageId>yambar.Raylib.NativeLibs</PackageId>
+    <PackageTags>yambar game raylib native libraries</PackageTags>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <!-- Defines the naming of libraries -->
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <LibraryExtension>so</LibraryExtension>
+    <LibraryPrefix>lib</LibraryPrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+    <LibraryExtension>dylib</LibraryExtension>
+    <LibraryPrefix>lib</LibraryPrefix>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <LibraryExtension>dll</LibraryExtension>
+    <LibraryPrefix>$(Configuration)</LibraryPrefix>
+  </PropertyGroup>
+
+  <!-- Configure Raylib  -->
+
+  <ItemGroup Label="CMake Configuration">
+    <Content
+      Include="$(IntermediateOutputPath)native/raylib/$(LibraryPrefix)raylib.$(LibraryExtension)"
+      Link="%(Filename)%(Extension)"
+      CopyToOutputDirectory="PreserveNewest"
+      Condition="Exists('$(IntermediateOutputPath)native/raylib/$(LibraryPrefix)raylib.$(LibraryExtension)')"
+    />
+    <CMakeArgs Include="-B $(IntermediateOutputPath)native" />
+    <CMakeArgs Include="-S $(IntermediateOutputPath)raylib-5.0" />
+    <CMakeArgs Include="-D CMAKE_BUILD_TYPE=$(Configuration)" />
+    <CMakeArgs Include="-D BUILD_SHARED_LIBS=ON" />
+    <CMakeArgs Include="-D BUILD_EXAMPLES=OFF" />
+  </ItemGroup>
+
+  <Target Name="ConfigureNativeLibs" BeforeTargets="BuildNativeLibs" Condition="$(NoLocalBuild) != true">
+    <DownloadFile
+      DestinationFolder="$(IntermediateOutputPath)"
+      DestinationFileName="raylib.zip"
+      SourceUrl="https://github.com/raysan5/raylib/archive/refs/tags/5.0.zip"
+      Condition="!Exists('$(IntermediateOutputPath)raylib.zip')"
+    />
+    <Unzip
+      SourceFiles="$(IntermediateOutputPath)raylib.zip"
+      DestinationFolder="$(IntermediateOutputPath)"
+      OverwriteReadOnlyFiles="true"
+      Condition="!Exists('$(IntermediateOutputPath)raylib-5.0')"
+    />
+    <Exec
+      Command="cmake @(CMakeArgs, ' ') $(CMakeExtraArgs)"
+      Condition="!Exists('$(IntermediateOutputPath)native/CMakeCache.txt')"
+    />
+  </Target>
+
+  <Target Name="BuildNativeLibs" BeforeTargets="BeforeBuild" Condition="$(NoLocalBuild) != true">
+    <Exec
+      Command="cmake --build $(IntermediateOutputPath)native --config $(Configuration)"
+    />
+  </Target>
+</Project>
